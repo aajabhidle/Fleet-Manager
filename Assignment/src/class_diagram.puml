@@ -1,0 +1,156 @@
+@startuml Transportation Fleet Management System
+
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 9
+skinparam classFontStyle bold
+skinparam packageFontSize 12
+skinparam packageFontStyle bold
+skinparam backgroundColor white
+skinparam classBackgroundColor white
+skinparam classBorderColor black
+
+' Exception Classes (Top-Right)
+class Exception
+class InvalidOperationException
+class OverloadException
+class InsufficientFuelException
+
+' FleetManager (Top-Left)
+class FleetManager {
+    -List<Vehicle> fleet
+    +addVehicle(Vehicle v)
+    +removeVehicle(String id)
+    +startAllJourneys(double distance)
+    +getTotalFuelConsumption(double distance)
+    +scheduleMaintenanceForAll()
+    +performMaintenanceForAll()
+    +searchByType(Class<?> type)
+    +generateReport()
+    +getVehiclesNeedingMaintenance()
+    +saveToFile(String filename)
+    +loadFromFile(String filename)
+}
+
+' Main Vehicle Abstract Class (Center)
+abstract class Vehicle {
+    -String id
+    -String model
+    -double maxSpeed
+    -double currentMileage
+    +displayInfo()
+    +getCurrentMileage()
+    +getId()
+    +getModel()
+    +getMaxSpeed()
+    +{abstract} move(double distance)
+    +{abstract} calculateFuelEfficiency()
+    +{abstract} estimateJourneyTime(double distance)
+    +{abstract} toCSV()
+}
+
+' Abstract Vehicle Types
+abstract class WaterVehicle {
+    -boolean hasSail
+    +hasSail()
+    +estimateJourneyTime(double distance)
+}
+
+abstract class LandVehicle {
+    -int numWheels
+    +getNumWheels()
+    +estimateJourneyTime(double distance)
+}
+
+abstract class AirVehicle {
+    -double maxAltitude
+    +getMaxAltitude()
+    +estimateJourneyTime(double distance)
+}
+
+' Concrete Vehicle Classes (Bottom Row)
+class CargoShip
+class Truck
+class Bus
+class Airplane
+class Car
+
+' Interfaces (Bottom-Middle Row)
+interface CargoCarrier {
+    +loadCargo(double weight)
+    +unloadCargo(double weight)
+    +getCargoCapacity()
+    +getCurrentCargo()
+}
+
+interface FuelConsumable {
+    +refuel(double amount)
+    +getFuelLevel()
+    +consumeFuel(double distance)
+}
+
+interface Maintainable {
+    +scheduleMaintenance()
+    +needsMaintenance()
+    +performMaintenance()
+}
+
+interface PassengerCarrier {
+    +boardPassengers(int num)
+    +disembarkPassengers(int num)
+    +getPassengerCapacity()
+    +getCurrentPassengers()
+}
+
+' Inheritance Relationships
+Vehicle <|-- WaterVehicle
+Vehicle <|-- LandVehicle
+Vehicle <|-- AirVehicle
+WaterVehicle <|-- CargoShip
+LandVehicle <|-- Truck
+LandVehicle <|-- Bus
+LandVehicle <|-- Car
+AirVehicle <|-- Airplane
+
+' Exception Inheritance
+Exception <|-- InvalidOperationException
+Exception <|-- OverloadException
+Exception <|-- InsufficientFuelException
+
+' Interface Implementations
+CargoCarrier <|.. CargoShip
+CargoCarrier <|.. Truck
+FuelConsumable <|.. CargoShip
+FuelConsumable <|.. Truck
+FuelConsumable <|.. Bus
+FuelConsumable <|.. Airplane
+FuelConsumable <|.. Car
+Maintainable <|.. CargoShip
+Maintainable <|.. Truck
+Maintainable <|.. Bus
+Maintainable <|.. Airplane
+Maintainable <|.. Car
+PassengerCarrier <|.. Bus
+PassengerCarrier <|.. Airplane
+PassengerCarrier <|.. Car
+
+' Association and Dependencies
+FleetManager --> Vehicle
+FleetManager ..> InvalidOperationException
+FleetManager ..> OverloadException
+FleetManager ..> InsufficientFuelException
+FleetManager ..> Exception
+
+' Layout positioning
+FleetManager -[hidden]- Exception
+Vehicle -[hidden]- CargoCarrier
+WaterVehicle -[hidden]- LandVehicle
+LandVehicle -[hidden]- AirVehicle
+CargoShip -[hidden]- Truck
+Truck -[hidden]- Bus
+Bus -[hidden]- Airplane
+Airplane -[hidden]- Car
+
+@enduml
+
+
